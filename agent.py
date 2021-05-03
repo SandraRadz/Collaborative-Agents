@@ -2,7 +2,8 @@ import random
 
 import mesa
 
-from utils import select_item_to_compare, find_difference
+from utils import select_item_to_compare, find_difference, generate_answers
+
 
 # todo leadership and mimicry
 
@@ -17,7 +18,7 @@ class Agent(mesa.Agent):
         self.critical_thinking = critical_thinking
         self.knowledge_sharing = knowledge_sharing
         self.answers = []
-        self.generate_answers(self.model.questions_num, ["a", "b", "c"])
+        self.answers = generate_answers(self.model.questions_num, ["a", "b", "c"])
         self.step_num = 0
         self.name = name
 
@@ -44,10 +45,6 @@ class Agent(mesa.Agent):
         else:
             pass
             # print(f"Agent {self.unique_id} does not want to show")
-
-    def generate_answers(self, questions_num, answer_options):
-        for i in range(questions_num):
-            self.answers.append(answer_options[int(random.random() * len(answer_options))])
 
     def correct_answer_percent(self):
         diff = find_difference(self.answers, self.model.correct_answer)
