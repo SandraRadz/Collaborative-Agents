@@ -2,7 +2,7 @@ import random
 from threading import Thread
 from tkinter import Label, Button, Canvas, Listbox, END, NORMAL, DISABLED, Scrollbar, StringVar, OptionMenu, Entry
 
-from agent_types import AGENT_TYPES, AGENT1, AGENT2, AGENT3
+from agent_types import AGENT_TYPES, AGENT1, AGENT2, AGENT3, AGENT4
 
 from utils import get_truncated_normal
 
@@ -15,17 +15,18 @@ class AgentGUI:
         self.controller = controller
 
         self.step_num = Label(text="round: 0", font="Verdana 10")
-        self.step_num.grid(row=0, column=7, sticky="nw")
+        self.step_num.grid(row=0, column=9, sticky="nw")
 
-        AgentButton(master, "Agent1", 1, 1, command=lambda a=AGENT_TYPES[AGENT1]: self.add_to_list(a))
-        AgentButton(master, "Agent2", 1, 3, command=lambda a=AGENT_TYPES[AGENT2]: self.add_to_list(a))
-        AgentButton(master, "Agent3", 1, 5, command=lambda a=AGENT_TYPES[AGENT3]: self.add_to_list(a))
+        AgentButton(master, AGENT1, 1, 1, command=lambda a=AGENT_TYPES[AGENT1]: self.add_to_list(a))
+        AgentButton(master, AGENT2, 1, 3, command=lambda a=AGENT_TYPES[AGENT2]: self.add_to_list(a))
+        AgentButton(master, AGENT3, 1, 5, command=lambda a=AGENT_TYPES[AGENT3]: self.add_to_list(a))
+        AgentButton(master, AGENT4, 1, 7, command=lambda a=AGENT_TYPES[AGENT4]: self.add_to_list(a))
         AgentButton(master, "Random", 2, 1, self.add_random_to_list)
 
         self.agent_list = Listbox(master, width=55, height=10)
-        self.agent_list.grid(row=3, column=1, columnspan=3, padx=7, sticky="news")
+        self.agent_list.grid(row=3, column=1, columnspan=5, padx=7, sticky="news")
 
-        Button(master, text="Delete", command=self.del_list).grid(row=3, column=5, sticky='new', padx=7)
+        Button(master, text="Delete", command=self.del_list).grid(row=3, column=7, sticky='new', padx=7)
 
         self.stop_button = Button(master, text="Set Up", command=self.setup)
         self.stop_button.grid(row=4, column=1, sticky='ew', padx=7, pady=1)
@@ -36,17 +37,17 @@ class AgentGUI:
         self.pause_button = Button(master, text="Pause", state=DISABLED, command=self.pause)
         self.pause_button.grid(row=4, column=5, sticky='ew', padx=7, pady=1)
 
-        Label(text="Question number", font="Verdana 10").grid(row=5, column=1, pady=1, sticky="nw")
+        Label(text="Question number:", font="Verdana 10").grid(row=5, column=1, padx=7, pady=1, sticky="nw")
 
         self.question_number = Entry(width=20)
         self.question_number.insert(END, '12')
         self.question_number.grid(row=5, column=3, sticky="new")
 
         self.info_label = Label(text="", font="Verdana 12", justify='left')
-        self.info_label.grid(row=7, column=0, columnspan=6, sticky="new")
+        self.info_label.grid(row=9, column=0, columnspan=6, sticky="new")
 
         self.canvas = Canvas(master, width=750, height=850, bg='white')
-        self.canvas.grid(row=1, column=7, columnspan=10, rowspan=10)
+        self.canvas.grid(row=1, column=9, columnspan=10, rowspan=10)
 
         self.current_state = {}
 
@@ -92,6 +93,10 @@ class AgentGUI:
         mimicry = None
         if agent_params['mimicry']:
             mimicry = round(agent_params['mimicry'], 2)
+
+        # critical thinking not depends on character
+        agent_params["critical_thinking"] = get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs()
+
         str_agent = f"{agent_params['name']} (tl={round(agent_params['talkativeness'], 2)}, " \
                     f"ag={round(agent_params['agreeableness'], 2)}, cr={round(agent_params['critical_thinking'], 2)}," \
                     f"ks={round(agent_params['knowledge_sharing'], 2)}, mm={mimicry})"
@@ -105,7 +110,6 @@ class AgentGUI:
             mimicry = None
         agent_params = {"talkativeness": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "agreeableness": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
-                        "critical_thinking": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "knowledge_sharing": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "mimicry": mimicry,
                         "name": "random"}
@@ -173,5 +177,5 @@ class AgentGUI:
 class AgentButton(Button):
 
     def __init__(self, master, name, row, column, command=None):
-        super().__init__(master=master, text=name, width=20, height=2, command=command)
+        super().__init__(master=master, text=name, width=15, height=2, command=command)
         self.grid(row=row, column=column, padx=7, pady=1, sticky='nwe')
