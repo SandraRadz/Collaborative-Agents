@@ -10,6 +10,7 @@ class Controller:
         self.model = None
         self.run = False
         self.equal = False
+        self.stop_condition = False
 
         root = Tk()
         self.gui = AgentGUI(root, self)
@@ -24,8 +25,8 @@ class Controller:
     def run_model(self, iteration_num=None):
         if self.model:
             self.run = True
-            while self.run and (not iteration_num or self.model.iter_num < iteration_num):
-                self.run, message = self.model.step()
+            while self.run and (not iteration_num or self.model.iter_num < iteration_num) and not self.stop_condition:
+                self.stop_condition, message = self.model.step()
                 self.gui.set_step(self.model.iter_num)
                 if message:
                     self.gui.set_info_text(message)

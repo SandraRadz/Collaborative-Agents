@@ -37,8 +37,25 @@ def get_truncated_normal(mean=0, sd=1, low=0, upp=10):
         (low - mean) / sd, (upp - mean) / sd, loc=mean, scale=sd)
 
 
-def generate_answers(questions_num, answer_options):
+def generate_correct_answers(questions_num, answer_options):
     answers = []
     for i in range(questions_num):
         answers.append(answer_options[int(random.random() * len(answer_options))])
+    return answers
+
+
+def generate_agent_answers(questions_num, answer_options, critical_thinking=None, correct_answer=None):
+    answers = []
+    if critical_thinking and correct_answer:
+        correct_percent = random.uniform(max(0, critical_thinking-0.3), min(1, critical_thinking+0.3))
+        correct_number = int(correct_percent * questions_num)
+        index = list(range(0, questions_num))
+        random.shuffle(index)
+        correct_num = index[:correct_number]
+        for i in range(questions_num):
+            if i in correct_num:
+                answers.append(correct_answer[i])
+            else:
+                incorrect_answer_options = list(filter(lambda x: x!= correct_answer[i], answer_options))
+                answers.append(incorrect_answer_options[int(random.random() * len(incorrect_answer_options))])
     return answers

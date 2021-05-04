@@ -1,13 +1,10 @@
 import mesa
-from mesa.datacollection import DataCollector
-from mesa.space import MultiGrid
-from mesa.time import RandomActivation, BaseScheduler
-from scipy.stats import truncnorm
+from mesa.time import BaseScheduler
 from agent import Agent
 
 import logging
 
-from utils import answers_is_equal, generate_answers
+from utils import answers_is_equal, generate_correct_answers
 
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
@@ -23,7 +20,7 @@ class AnswersModel(mesa.Model):
         self.pause = 0.25
         self.controller = controller
         # self.correct_answer = ["a", "b", "c", "b", "a", "b", "c", "a", "b", "c", "c", "b"]
-        self.correct_answer = generate_answers(self.questions_num, ["a", "b", "c"])
+        self.correct_answer = generate_correct_answers(self.questions_num, ["a", "b", "c"])
         self.iter_num = 0
         self.last_change = 0
 
@@ -39,11 +36,11 @@ class AnswersModel(mesa.Model):
         self.iter_num += 1
         self.schedule.step()
         if self.all_agents_equal():
-            return False, "ALL EQUAL!"
+            return True, "ALL EQUAL!"
         diff = self.iter_num - self.last_change
         if diff > 2:
-            return False, f"NO CHANGES LAST {diff} ROUND"
-        return True, None
+            return True, f"NO CHANGES LAST {diff} ROUND"
+        return False, None
 
     def all_agents_equal(self):
         first_agent_answers = self.schedule.agents[0].answers

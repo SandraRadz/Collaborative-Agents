@@ -1,5 +1,6 @@
+import random
 from threading import Thread
-from tkinter import Label, Button, Canvas, Listbox, END, NORMAL, DISABLED, Scrollbar, StringVar, OptionMenu
+from tkinter import Label, Button, Canvas, Listbox, END, NORMAL, DISABLED, Scrollbar, StringVar, OptionMenu, Entry
 
 from agent_types import AGENT_TYPES, AGENT1, AGENT2, AGENT3
 
@@ -21,7 +22,7 @@ class AgentGUI:
         AgentButton(master, "Agent3", 1, 5, command=lambda a=AGENT_TYPES[AGENT3]: self.add_to_list(a))
         AgentButton(master, "Random", 2, 1, self.add_random_to_list)
 
-        self.agent_list = Listbox(master, width=45, height=10)
+        self.agent_list = Listbox(master, width=55, height=10)
         self.agent_list.grid(row=3, column=1, columnspan=3, padx=7, sticky="news")
 
         Button(master, text="Delete", command=self.del_list).grid(row=3, column=5, sticky='new', padx=7)
@@ -35,10 +36,16 @@ class AgentGUI:
         self.pause_button = Button(master, text="Pause", state=DISABLED, command=self.pause)
         self.pause_button.grid(row=4, column=5, sticky='ew', padx=7, pady=1)
 
-        self.info_label = Label(text="", font="Verdana 12", justify='left')
-        self.info_label.grid(row=7, column=0, columnspan=6, sticky="ew")
+        Label(text="Question number", font="Verdana 10").grid(row=5, column=1, pady=1, sticky="nw")
 
-        self.canvas = Canvas(master, width=550, height=550, bg='white')
+        self.question_number = Entry(width=20)
+        self.question_number.insert(END, '12')
+        self.question_number.grid(row=5, column=3, sticky="new")
+
+        self.info_label = Label(text="", font="Verdana 12", justify='left')
+        self.info_label.grid(row=7, column=0, columnspan=6, sticky="new")
+
+        self.canvas = Canvas(master, width=750, height=850, bg='white')
         self.canvas.grid(row=1, column=7, columnspan=10, rowspan=10)
 
         self.current_state = {}
@@ -57,7 +64,13 @@ class AgentGUI:
         self.start_button.configure(state=NORMAL)
         self.step_num.configure(text="round: 0")
         if self.controller.agents_params:
-            question_num = 12
+            question_num_str = self.question_number.get()
+            try:
+                question_num = int(question_num_str)
+            except ValueError:
+                question_num = 12
+                self.question_number.delete(0, END)
+                self.question_number.insert(0, 12)
             self.controller.setup_model(question_num=question_num)
             self.show_agents()
         else:
@@ -86,11 +99,15 @@ class AgentGUI:
         self.controller.add_agent_prototype(agent_params)
 
     def add_random_to_list(self):
+        if random.random() > 0.5:
+            mimicry = get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs()
+        else:
+            mimicry = None
         agent_params = {"talkativeness": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "agreeableness": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "critical_thinking": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "knowledge_sharing": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
-                        "mimicry": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
+                        "mimicry": mimicry,
                         "name": "random"}
         self.add_to_list(agent_params)
 
@@ -156,5 +173,5 @@ class AgentGUI:
 class AgentButton(Button):
 
     def __init__(self, master, name, row, column, command=None):
-        super().__init__(master=master, text=name, width=17, height=2, command=command)
+        super().__init__(master=master, text=name, width=20, height=2, command=command)
         self.grid(row=row, column=column, padx=7, pady=1, sticky='nwe')

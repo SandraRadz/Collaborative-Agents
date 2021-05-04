@@ -3,7 +3,7 @@ import time
 
 import mesa
 
-from utils import select_item_to_compare, find_difference, generate_answers, answers_is_equal
+from utils import select_item_to_compare, find_difference, generate_agent_answers, answers_is_equal
 
 
 # todo leadership and mimicry
@@ -19,7 +19,7 @@ class Agent(mesa.Agent):
         self.critical_thinking = critical_thinking
         self.knowledge_sharing = knowledge_sharing
         self.answers = []
-        self.answers = generate_answers(self.model.questions_num, ["a", "b", "c"])
+        self.answers = generate_agent_answers(self.model.questions_num, ["a", "b", "c"], self.critical_thinking, self.model.correct_answer)
         self.mimicry = mimicry
         self.name = name
 
