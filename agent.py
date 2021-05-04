@@ -11,7 +11,8 @@ from utils import select_item_to_compare, find_difference, generate_answers, ans
 class Agent(mesa.Agent):
     """ An agent with fixed initial wealth."""
 
-    def __init__(self, unique_id, model, talkativeness, agreeableness, critical_thinking, knowledge_sharing, name="Custom"):
+    def __init__(self, unique_id, model, talkativeness, agreeableness, critical_thinking, knowledge_sharing, mimicry,
+                 name="Custom"):
         super().__init__(unique_id, model)
         self.talkativeness = talkativeness
         self.agreeableness = agreeableness
@@ -19,11 +20,12 @@ class Agent(mesa.Agent):
         self.knowledge_sharing = knowledge_sharing
         self.answers = []
         self.answers = generate_answers(self.model.questions_num, ["a", "b", "c"])
+        self.mimicry = mimicry
         self.name = name
 
     def __str__(self):
-        return f"{self.name} Agent (tl={self.talkativeness}, ag={self.agreeableness}, cr={self.critical_thinking}," \
-               f"ks={self.knowledge_sharing})"
+        return f"{self.name} (tl={self.talkativeness}, ag={self.agreeableness}, cr={self.critical_thinking}," \
+               f"ks={self.knowledge_sharing}, mm={self.mimicry})"
 
     def step(self):
         if self.talkativeness > random.random():
@@ -31,12 +33,16 @@ class Agent(mesa.Agent):
             # print(f"Agent {self.unique_id} is showing {self.answers} ({self.correct_answer_percent()} %)")
             for other_agent in self.model.schedule.agents:
                 if other_agent.unique_id != self.unique_id and other_agent.agreeableness > random.random():
-                    old_answers = tuple(other_agent.answers)
-                    el_to_compare = select_item_to_compare(self, other_agent)
-                    for el in el_to_compare:
-                        other_agent.make_decision(el, self.answers[el])
-                    if not answers_is_equal(old_answers, tuple(other_agent.answers)):
-                        self.model.update_last_change()
+                    if other_agent.mimicry and len(self.model.schedule.agents) > 3\
+                            and other_agent.mimicry <= other_agent.percent_of_same_answers(self.answers):
+                        other_agent.answers = self.answers
+                    else:
+                        old_answers = tuple(other_agent.answers)
+                        el_to_compare = select_item_to_compare(self, other_agent)
+                        for el in el_to_compare:
+                            other_agent.make_decision(el, self.answers[el])
+                        if not answers_is_equal(old_answers, tuple(other_agent.answers)):
+                            self.model.update_last_change()
                     new_correct_answers_percent = other_agent.correct_answer_percent()
                     self.model.controller.gui.change_agent_answers(other_agent, self.model.correct_answer,
                                                                    new_correct_answers_percent)
@@ -75,6 +81,16 @@ class Agent(mesa.Agent):
             return variant1
         else:
             return variant2
+
+    def percent_of_same_answers(self, answer):
+        count = 0
+        agents = self.model.schedule.agents
+        for other_agent in agents:
+            if other_agent.unique_id != self.unique_id:
+                if answers_is_equal(other_agent.answers, answer):
+                    count += 1
+        return count / (len(agents) - 1)
+
 
 
 

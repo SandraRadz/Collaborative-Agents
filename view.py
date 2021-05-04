@@ -1,5 +1,5 @@
 from threading import Thread
-from tkinter import Label, Button, Canvas, Listbox, END, NORMAL, DISABLED
+from tkinter import Label, Button, Canvas, Listbox, END, NORMAL, DISABLED, Scrollbar, StringVar, OptionMenu
 
 from agent_types import AGENT_TYPES, AGENT1, AGENT2, AGENT3
 
@@ -23,9 +23,6 @@ class AgentGUI:
 
         self.agent_list = Listbox(master, width=45, height=10)
         self.agent_list.grid(row=3, column=1, columnspan=3, padx=7, sticky="news")
-        # vsb = Scrollbar(self.agent_list, orient="vertical", command=self.agent_list.yview)
-        # vsb.grid(row=3, column=4, sticky='ns')
-        # self.agent_list.configure(yscrollcommand=vsb.set)
 
         Button(master, text="Delete", command=self.del_list).grid(row=3, column=5, sticky='new', padx=7)
 
@@ -50,7 +47,6 @@ class AgentGUI:
         self.start_button.configure(state=DISABLED)
         self.stop_button.configure(state=NORMAL)
         self.pause_button.configure(state=NORMAL)
-        # Call work function
         t1 = Thread(target=self.run_model)
         t1.start()
 
@@ -80,9 +76,12 @@ class AgentGUI:
 
     def add_to_list(self, agent_params):
         self.set_info_text("")
-        str_agent = f"{agent_params['name']} Agent (tl={round(agent_params['talkativeness'], 2)}, " \
+        mimicry = None
+        if agent_params['mimicry']:
+            mimicry = round(agent_params['mimicry'], 2)
+        str_agent = f"{agent_params['name']} (tl={round(agent_params['talkativeness'], 2)}, " \
                     f"ag={round(agent_params['agreeableness'], 2)}, cr={round(agent_params['critical_thinking'], 2)}," \
-                    f"ks={round(agent_params['knowledge_sharing'], 2)})"
+                    f"ks={round(agent_params['knowledge_sharing'], 2)}, mm={mimicry})"
         self.agent_list.insert(END, str_agent)
         self.controller.add_agent_prototype(agent_params)
 
@@ -91,6 +90,7 @@ class AgentGUI:
                         "agreeableness": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "critical_thinking": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "knowledge_sharing": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
+                        "mimicry": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
                         "name": "random"}
         self.add_to_list(agent_params)
 

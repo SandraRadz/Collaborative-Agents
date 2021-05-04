@@ -32,7 +32,7 @@ class AnswersModel(mesa.Model):
         for agent_param in agents_param:
             unique_id = len(self.schedule.agents)
             a = Agent(unique_id, self, agent_param["talkativeness"], agent_param["agreeableness"],
-                      agent_param["critical_thinking"], agent_param["knowledge_sharing"])
+                      agent_param["critical_thinking"], agent_param["knowledge_sharing"], agent_param["mimicry"])
             self.schedule.add(a)
 
     def step(self):
