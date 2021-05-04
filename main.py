@@ -17,10 +17,6 @@
 from tkinter import Tk
 
 from controller import Controller
-from view import AgentGUI
 
 if __name__ == "__main__":
-    root = Tk()
     controller = Controller()
-    my_gui = AgentGUI(root, controller)
-    root.mainloop()
