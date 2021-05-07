@@ -27,8 +27,6 @@ class Agent(mesa.Agent):
 
     def step(self):
         if self.talkativeness > random.random():
-            self.model.controller.gui.change_agent_status(self.unique_id, "SHOWING", clean=True)
-            # print(f"Agent {self.unique_id} is showing {self.answers} ({self.correct_answer_percent()} %)")
             for other_agent in self.model.schedule.agents:
                 if other_agent.unique_id != self.unique_id and other_agent.agreeableness > random.random():
                     if other_agent.mimicry and len(self.model.schedule.agents) > 3\
@@ -42,15 +40,7 @@ class Agent(mesa.Agent):
                         if not answers_is_equal(old_answers, tuple(other_agent.answers)):
                             self.model.update_last_change()
                     new_correct_answers_percent = other_agent.correct_answer_percent()
-                    self.model.controller.gui.change_agent_answers(other_agent, self.model.correct_answer,
-                                                                   new_correct_answers_percent)
-                    time.sleep(self.model.pause)
                     # print(f"Agent {other_agent.unique_id} changed his list from {old_answers} to {other_agent.answers} ({old_correct_answers_percent}% -> {new_correct_answers_percent} %)")
-
-        else:
-            self.model.controller.gui.change_agent_status(self.unique_id, "NOT SHOW", clean=True)
-            # print(f"Agent {self.unique_id} does not want to show")
-        time.sleep(self.model.pause)
 
     def correct_answer_percent(self):
         diff = find_difference(self.answers, self.model.correct_answer)

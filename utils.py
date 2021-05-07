@@ -47,7 +47,7 @@ def generate_correct_answers(questions_num, answer_options):
 def generate_agent_answers(questions_num, answer_options, critical_thinking=None, correct_answer=None):
     answers = []
     if critical_thinking and correct_answer:
-        correct_percent = random.uniform(max(0, critical_thinking-0.3), min(1, critical_thinking+0.3))
+        correct_percent = random.uniform(max(0, critical_thinking-0.15), min(1, critical_thinking+0.15))
         correct_number = int(correct_percent * questions_num)
         index = list(range(0, questions_num))
         random.shuffle(index)

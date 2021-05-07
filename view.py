@@ -95,7 +95,7 @@ class AgentGUI:
             mimicry = round(agent_params['mimicry'], 2)
 
         # critical thinking not depends on character
-        agent_params["critical_thinking"] = get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs()
+        agent_params["critical_thinking"] = get_truncated_normal(mean=0.4, sd=0.2, low=0, upp=1).rvs()
 
         str_agent = f"{agent_params['name']} (tl={round(agent_params['talkativeness'], 2)}, " \
                     f"ag={round(agent_params['agreeableness'], 2)}, cr={round(agent_params['critical_thinking'], 2)}," \
@@ -105,12 +105,12 @@ class AgentGUI:
 
     def add_random_to_list(self):
         if random.random() > 0.5:
-            mimicry = get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs()
+            mimicry = get_truncated_normal(mean=0.7, sd=0.3, low=0, upp=1).rvs()
         else:
             mimicry = None
-        agent_params = {"talkativeness": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
-                        "agreeableness": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
-                        "knowledge_sharing": get_truncated_normal(mean=0.7, sd=0.4, low=0, upp=1).rvs(),
+        agent_params = {"talkativeness": get_truncated_normal(mean=0.5, sd=0.3, low=0, upp=1).rvs(),
+                        "agreeableness": get_truncated_normal(mean=0.5, sd=0.3, low=0, upp=1).rvs(),
+                        "knowledge_sharing": get_truncated_normal(mean=0.5, sd=0.3, low=0, upp=1).rvs(),
                         "mimicry": mimicry,
                         "name": "random"}
         self.add_to_list(agent_params)
