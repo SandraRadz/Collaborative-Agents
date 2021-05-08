@@ -28,7 +28,8 @@ def select_item_to_compare(agent1, agent2):
     knowledge_sharing = min(agent1.knowledge_sharing, agent2.knowledge_sharing)
     diff = find_difference(agent1.answers, agent2.answers)
     random.shuffle(diff)
-    num_of_comp = math.ceil(len(diff) * knowledge_sharing) - 1
+    # num_of_comp = math.ceil(len(diff) * knowledge_sharing) - 1
+    num_of_comp = max(math.ceil(len(diff) * knowledge_sharing) - 1, 1)
     return diff[:num_of_comp]
 
 
@@ -59,3 +60,13 @@ def generate_agent_answers(questions_num, answer_options, critical_thinking=None
                 incorrect_answer_options = list(filter(lambda x: x!= correct_answer[i], answer_options))
                 answers.append(incorrect_answer_options[int(random.random() * len(incorrect_answer_options))])
     return answers
+
+
+def validate_value(value):
+    try:
+        value = float(value)
+        if value < 0 or value > 1:
+            return False
+        return True
+    except TypeError:
+        return False
